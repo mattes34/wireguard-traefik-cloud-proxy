@@ -7,23 +7,20 @@ services:
     restart: unless-stopped
     cap_add:
       - NET_ADMIN
-     # - SYS_MODULE
+      - SYS_MODULE
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Berlin
-      # - SERVERURL=wireguard.${BASE_FQDN-example.com}
-      # - PEERDNS=auto
+      - SERVERURL=wireguard.${BASE_FQDN-example.com}
+      - PEERDNS=auto
       - INTERNAL_SUBNET=10.0.0.0
       - ALLOWEDIPS=10.0.0.0/24
       - LOG_CONFS=true
-    sysctls:
-      - net.ipv4.conf.all.src_valid_mark=1
     volumes:
       - wireguard:/config
       - /lib/modules:/lib/modules
-    networks:
-      - proxy-net
+    network_mode: host
 
   traefik:
     image: traefik:latest
@@ -71,7 +68,7 @@ services:
       - letsencrypt-certs:/letsencrypt
 
   traefik-forward-auth:
-    image: thomseddon/traefik-forward-auth:${TRAEFIK_FORWARD_AUTH_IMAGE_TAG-latest}
+    image: thomseddon/traefik-forward-auth:2.2.0-arm64
     container_name: traefik-forward-auth
     restart: unless-stopped
     environment:
